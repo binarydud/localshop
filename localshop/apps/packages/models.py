@@ -138,6 +138,7 @@ class ReleaseFile(models.Model):
         ('bdist_msi', 'MSI'),
         ('bdist_dmg', 'DMG'),
         ('bdist_rpm', 'RPM'),
+        ('bdist_wheel', 'Wheel'),
         ('bdist_dumb', 'bdist_dumb'),
         ('bdist_wininst', 'bdist_wininst'),
     )
