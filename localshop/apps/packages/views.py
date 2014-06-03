@@ -1,5 +1,7 @@
 import logging
+import urlparse
 
+from django.conf import settings
 from django.contrib.auth.decorators import login_required, permission_required
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import Http404, HttpResponse, HttpResponseBadRequest
@@ -152,13 +154,16 @@ def download_file(request, name, pk, filename):
                                    release_file=release_file)
         return redirect(release_file.url)
 
-    # TODO: Use sendfile if enabled
-    response = HttpResponse(release_file.distribution.file,
-        content_type='application/force-download')
-    response['Content-Disposition'] = 'attachment; filename=%s' % (
-        release_file.filename)
-    if release_file.distribution.file.size:
-        response["Content-Length"] = release_file.distribution.file.size
+    if getattr(settings, 'LOCALSHOP_EXTERNAL_SERVE', False):
+        response = redirect(release_file.distribution.url)
+    else:
+        # TODO: Use sendfile if enabled
+        response = HttpResponse(release_file.distribution.file,
+            content_type='application/force-download')
+        response['Content-Disposition'] = 'attachment; filename=%s' % (
+            release_file.filename)
+        if release_file.distribution.file.size:
+            response["Content-Length"] = release_file.distribution.file.size
     return response
 
 
